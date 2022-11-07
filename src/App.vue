@@ -16,7 +16,8 @@ export default {
 </script>
 <style lang="scss">
 @import '@/assets/scss/reset.scss';
-#app {
+body {
   background-color: $color-background;
 }
+
 </style>

@@ -31,14 +31,14 @@ export default {
 <style lang="scss">
 .slide-banner-wrapper {
     width: 100%;
-    height: 0%;
-    padding-top: 40%;
-    position: relative;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
     overflow: hidden;
     .slide-banner-content {
-        position: absolute;
-        top: 0;
-        left: 0;
+        width: 100%;
+        height: 100%;
         .slide-page {
             display: inline-block;
             img {

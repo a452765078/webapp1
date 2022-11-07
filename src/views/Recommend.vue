@@ -1,5 +1,5 @@
 <template>
-<scroll>
+<scroll v-loading="!sliders.length&&!albums.length">
     <div class="slider-wrapper">
         <div class="slider-inner">
             <slider v-if="sliders.length" :sliders="sliders"></slider>
@@ -44,9 +44,12 @@ export default {
 }
 </script>
 <style lang="scss">
+@import '@/assets/scss/base.scss';
 .slider-wrapper {
     position: relative;
     width: 100%;
+    height: 0;
+    padding-top: 40%;
     overflow: hidden;
     .slider-inner {
         width: 100%;

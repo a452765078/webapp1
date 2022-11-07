@@ -15,6 +15,7 @@ export default function(dom) {
             bounce: false,
             probeType: 2
         })
+
     })
 
     onUnmounted(()=>{
