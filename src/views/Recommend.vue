@@ -39,7 +39,7 @@ export default {
         const res = await service.getRecommend()
         this.sliders = res.sliders
         this.albums = res.albums
-        console.log(res)
+        // console.log(res)
     }
 }
 </script>

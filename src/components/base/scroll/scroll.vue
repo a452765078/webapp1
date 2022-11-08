@@ -13,10 +13,15 @@ import { ref } from 'vue';
 import scrollFunc from './index'
 export default {
     name: 'scrollVue',
-    setup() {
+    props: {
+        probeType:{
+            type:Number,
+            default(){return 1}
+        }
+    },
+    setup(props,ctx) {
         const scrollRef = ref(null)
-        scrollFunc(scrollRef)
-        
+        scrollFunc(scrollRef,props)        
         return {
             scrollRef,
         }

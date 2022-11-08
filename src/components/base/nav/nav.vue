@@ -1,7 +1,9 @@
 <template>
     <div class="nav">
         <ul>
-            <li v-for="(nav,index) in navList" :key="nav.id" @click="curIndex=index" :class="{'active-item':curIndex==index}">{{nav.name}}</li>
+            <li v-for="(nav,index) in navList" :key="nav.id" @click="routerLink(index,nav.path)" :class="{'active-item':curIndex==index}">
+                    {{nav.name}}
+            </li>
         </ul>
     </div>
 </template>
@@ -14,21 +16,32 @@ export default {
             navList: [
                 {
                     id:'001',
-                    name: '推荐'
+                    name: '推荐',
+                    path:'/recommend'
                 },
                 {
                     id:'002',
-                    name: '歌手'
+                    name: '歌手',
+                    path:'/singer'
                 },
                 {
                     id:'003',
-                    name: '排行'
+                    name: '排行',
+                    path:'/rank'
                 },
                 {
                     id:'004',
-                    name: '搜索'
+                    name: '搜索',
+                    path:'/search'
                 },
             ]
+        }
+    },
+    methods: {
+        routerLink(index,path) {
+            this.curIndex = index
+            console.log(this.curIndex)
+            this.$router.push({path})
         }
     }
 }

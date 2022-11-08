@@ -13,6 +13,21 @@ const routes = [
     name: 'recommend',
     component: () => import('@/views/Recommend.vue')
   },
+  {
+    path: '/singer',
+    name: 'singer',
+    component: () => import('@/views/Singer.vue')
+  },
+  {
+    path: '/rank',
+    name: 'rank',
+    component: () => import('@/views/Rank.vue')
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: () => import('@/views/Search.vue')
+  },
 ]
 
 const router = createRouter({

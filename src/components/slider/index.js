@@ -19,7 +19,12 @@ export default function(dom) {
     })
 
     onUnmounted(()=>{
-        bs.value.destroy()
+        //这个地方在切换路由时报错，不清楚原因是什么
+        //报错内容：Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'trigger')
+        // bs.value.destroy()
+        // console.log(bs.value)
+        // bs.value.destroy()
+
     })
 
     
