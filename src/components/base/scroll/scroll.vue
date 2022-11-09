@@ -8,7 +8,7 @@
 <script>
 // import BScroll from '@better-scroll/core';
 // import ObserveDOM from '@better-scroll/observe-dom'
-import { ref } from 'vue';
+import { ref ,defineExpose} from 'vue';
 // BScroll.use(ObserveDOM)
 import scrollFunc from './index'
 export default {
@@ -21,11 +21,14 @@ export default {
     },
     setup(props,ctx) {
         const scrollRef = ref(null)
-        scrollFunc(scrollRef,props)        
+        const {scroll} = scrollFunc(scrollRef,props)  
+
         return {
             scrollRef,
+            scroll
         }
-    }
+
+    },
 }
 </script>
 <style lang="scss">
