@@ -1,23 +1,28 @@
 <template>
-<scroll v-loading="!sliders.length&&!albums.length">
-    <div class="slider-wrapper">
-        <div class="slider-inner">
-            <slider v-if="sliders.length" :sliders="sliders"></slider>
-        </div>
-    </div>
-    <div class="albums">
-        <h4>热门歌单推荐</h4>
-        <div class="albumsList">
-            <div class="item" v-for="item in albums" :key="item.id">
-                <img :src="item.pic" alt="">
-                <div class="desc">
-                    <span class="username">{{item.username}}</span>
-                    <span class="title">{{item.title}}</span>
+<div class="recommendWrapper">
+    <scroll v-loading="!sliders.length&&!albums.length">
+        <div class="recommendContent">
+            <div class="slider-wrapper">
+                <div class="slider-inner">
+                    <slider v-if="sliders.length" :sliders="sliders"></slider>
+                </div>
+            </div>
+            <div class="albums">
+                <h4>热门歌单推荐</h4>
+                <div class="albumsList">
+                    <div class="item" v-for="item in albums" :key="item.id">
+                        <img :src="item.pic" alt="">
+                        <div class="desc">
+                            <span class="username">{{item.username}}</span>
+                            <span class="title">{{item.title}}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</scroll>
+    </scroll>
+</div>
+
 </template>
 <script>
 import service from '@/service/getData.js';
@@ -45,52 +50,68 @@ export default {
 </script>
 <style lang="scss">
 @import '@/assets/scss/base.scss';
-.slider-wrapper {
-    position: relative;
+.recommendWrapper {
+    position: fixed;
+    top: 88px;
     width: 100%;
-    height: 0;
-    padding-top: 40%;
+    height: 100%;
     overflow: hidden;
-    .slider-inner {
-        width: 100%;
-    }
 }
-.albums {
-    color: $color-theme;
-    h4 {
-        height: 60px;
-        line-height: 60px;
-        text-align: center;
-        font-size: $font-size-medium;
+.recommendContent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-bottom: 90px;
+    .slider-wrapper {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-top: 40%;
+        overflow: hidden;
+        .slider-inner {
+            width: 100%;
+        }
     }
-    .albumsList {
-        .item {
-            display: flex;
-            padding: 15px;
-            box-sizing: border-box;
-            img {
-                width: 60px;
-                height: 60px;
-            }
-            .desc {
-                margin-left: 15px;
-                height: 60px;
+    .albums {
+        color: $color-theme;
+        h4 {
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            font-size: $font-size-medium;
+        }
+        .albumsList {
+            .item {
                 display: flex;
-                flex-direction: column;
-                justify-content: space-around;
-                .username {
-                    display: block;
-                    color: $color-text;
-                    font-size: $font-size-medium;
+                padding: 15px;
+                box-sizing: border-box;
+                img {
+                    width: 60px;
+                    height: 60px;
                 }
-                .title {
-                    display: block;
-                    color: $color-text-l;
-                    font-size: $font-size-medium;
+                .desc {
+                    margin-left: 15px;
+                    height: 60px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-around;
+                    .username {
+                        display: block;
+                        color: $color-text;
+                        font-size: $font-size-medium;
+                    }
+                    .title {
+                        display: block;
+                        color: $color-text-l;
+                        font-size: $font-size-medium;
+                    }
                 }
+    
             }
-
         }
     }
 }
+
+
 </style>

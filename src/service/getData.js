@@ -9,4 +9,8 @@ export default {
     ,getSinger() {
         return getData('/api/getSingerList')
     }
+    ,getSingerDetail(params) {
+        const {mid} = params
+        return getData(`/api/getSingerDetail?mid=${mid}`)
+    }
 }

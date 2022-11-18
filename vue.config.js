@@ -8,6 +8,7 @@ module.exports = defineConfig({
         additionalData: `
           @import "@/assets/scss/variable.scss";
           @import "@/assets/scss/mixin.scss";
+          @import "@/assets/scss/base.scss";
         `
       }
     }
@@ -19,4 +20,10 @@ module.exports = defineConfig({
       registerRouter(devServer.app)
     }
   },
+  chainWebpack: (config) => {
+      config.plugin("define").tap((args) => {
+          args[0]["process"] = {...args[0]["process.env"]}
+            return args;
+        })
+    }
 })

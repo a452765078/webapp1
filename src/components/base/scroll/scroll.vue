@@ -1,8 +1,6 @@
 <template>
     <div class="scrollWrapper" ref="scrollRef">
-        <div class="scrollContent">
-            <slot></slot>
-        </div>
+        <slot></slot>
     </div>
 </template>
 <script>
@@ -34,10 +32,6 @@ export default {
 <style lang="scss">
 .scrollWrapper {
     width: 100%;
-    height: 800px;
-    overflow: hidden;
-    .scrollContent {
-
-    }
+    height: 100%;
 }
 </style>
