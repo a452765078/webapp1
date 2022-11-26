@@ -4,7 +4,7 @@ export default function(comp) {
     return {
         mounted(el,binding) {
             const app = createApp(comp).mount(document.createElement("div"))
-            console.log(comp)
+            // console.log(comp)
             const name = comp.name
             el[name] = {}
             el[name].instance = app

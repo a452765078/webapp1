@@ -40,6 +40,7 @@ import scroll from '@/components/base/scroll/scroll.vue';
 import singerFunc from '@/components/singer/index';
 import {ref,getCurrentInstance,onMounted} from 'vue';
 import {setItem} from '@/store/storage';
+import storageName from '@/assets/constVar/storageName'
 export default {
     name: 'singer',
     components: {
@@ -61,7 +62,7 @@ export default {
         //     this.posY = -posY;
         // },
         toSingerDetail(singer) {
-            setItem("singer",singer)
+            setItem(storageName._SINGER_,singer)
             this.$router.push({
                 path:`/singer/${singer.mid}`,
             })

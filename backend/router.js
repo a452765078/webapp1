@@ -57,7 +57,7 @@ function post(url, params) {
     headers: {
       referer: 'https://y.qq.com/',
       origin: 'https://y.qq.com/',
-      'Content-Type': 'application/x-www-form-urlencoded'
+      // 'Content-Type': 'application/x-www-form-urlencoded'   2022/11/20注释，由于请求歌曲地址后无法返回数据
     }
   })
 }
@@ -357,10 +357,10 @@ function registerSingerDetail(app) {
 function registerSongsUrl(app) {
   app.get('/api/getSongsUrl', (req, res) => {
     const mid = req.query.mid
-
     let midGroup = []
     // 第三方接口只支持最多处理 100 条数据，所以如果超过 100 条数据，我们要把数据按每组 100 条切割，发送多个请求
     if (mid.length > 100) {
+      console.log("mid",mid)
       const groupLen = Math.ceil(mid.length / 100)
       for (let i = 0; i < groupLen; i++) {
         midGroup.push(mid.slice(i * 100, (100 * (i + 1))))

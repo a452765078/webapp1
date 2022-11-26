@@ -9,7 +9,7 @@
         </div>
     </div>
     <!-- Q:v-loading:[test] test获取不到是怎么回事？ -->
-    <scroll :probeType="3" @scrollY="scrollY" v-loading:[test]="loading" v-no-result="noResult">
+    <scroll :probeType="3" @scrollY="scrollY" v-loading="loading" v-no-result="noResult">
         <div class="songsContent">
             <div class="songsList">
                 <div class="item" v-for="(songs,index) in singerDetail"  @click="selectItem(songs,index)">
@@ -109,8 +109,10 @@ export default {
         onMounted(async () => {
             singer.value = getItem("singer")
             const res = await service.getSingerDetail(singer.value)
-            loading.value = false
+            const res1 = await service.getSongsUrl(res.songs)  //songs是引用类型，不需要返回
+            console.log(res.songs)
             singerDetail.value = res.songs
+            loading.value = false
             imgHeight.value = imgRef.value.clientHeight
             maxTranlateDistance.value = imgHeight.value - MIN_IMG_HEIGHT
             // console.log(maxTranlateDistance)
@@ -184,7 +186,7 @@ export default {
             left: 12px;
             color: $color-theme;
             font-size: $font-size-large-x;
-            z-index: 999;
+            z-index: 999999;
         }
         .mask {
             position: absolute;

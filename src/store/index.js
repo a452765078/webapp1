@@ -5,11 +5,14 @@ import actions from './action'
 
 const debug = process.env.NODE_ENV !== 'production'
 
-console.log(process)
+// console.log(process)
 
 export default createStore({
   state,
   getters: {
+    getCurPlaySong(state) {
+      return state.playingList[state.index] || {}
+    }
   },
   mutations,
   actions,

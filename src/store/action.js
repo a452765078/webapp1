@@ -1,5 +1,5 @@
 import constVar from '@/assets/constVar/index'
-import {getRandomIndex,swap} from '@/assets/util/index'
+import {getRandomList} from '@/assets/util/index'
 export default {
     selectSong({commit},{songs,index}) {
         commit('setPlaying',true)
@@ -12,10 +12,7 @@ export default {
     selectRandomPlay({commit},{songs}) {
         const max = songs.length
         const randomList = songs.concat()
-        for(let i=0;i<max;i++) {
-            let j = getRandomIndex(max) 
-            swap(i,j,randomList)
-        }
+        getRandomList(randomList,max)
         commit('setPlaying',true)
         commit('setPlayMode',constVar.RANDOM)
         commit('setPlayScreen',true)
@@ -23,5 +20,27 @@ export default {
         commit('setPlayingList',randomList)
         commit('setIndex',0)
 
+    },
+    setMiniPlay({commit}){
+        commit('setPlayScreen',false)
+    },
+    setPlayModeBySequence({commit,dispatch},val){
+        let constList = [constVar.SEQUENCE,constVar.LOOP,constVar.RANDOM]
+        let index = constList.findIndex((item)=>item==val)
+        if(index==(constList.length-1)) {
+            index = 0
+        }else {
+            index ++
+        }
+        commit('setPlayMode',constList[index])
+    },
+    setSequenceList({commit},songs) {
+        commit('setPlayingList',songs)
+    },
+    setRandomList({commit},songs) {
+        const max = songs.length
+        const list = songs.concat()
+        getRandomList(list,max)
+        commit('setPlayingList',list)
     }
 }

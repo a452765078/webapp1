@@ -1,8 +1,10 @@
 import axios from 'axios'
 
 
-export default function(url) {
-    return axios.get(url).then((res)=>{
+export default function(url,params) {
+    return axios.get(url,{
+        params
+    }).then((res)=>{
         const data = res.data
         if(data.code == 0) {
             return Promise.resolve(data.result)

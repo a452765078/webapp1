@@ -17,5 +17,8 @@ export default {
     },
     setIndex(state,val) {
         state.index = val
+    },
+    setFavoriteList(state,val) {
+        state.favoriteList = val
     }
 }

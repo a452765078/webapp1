@@ -1,7 +1,8 @@
 
 const player = {
     RANDOM: 'random',
-    SEQUENCE: 'sequence'
+    SEQUENCE: 'sequence',
+    LOOP: 'loop'
 }
 
 export default player
