@@ -1,10 +1,11 @@
 <template>
-<div class="player">
+<div class="player" v-show="playingList&&playingList.length">
     <div class="normal-player" :style="playStyle" v-if="playScreen">
         <div class="down" @click="setMiniPlay">下拉</div>
         <h4>{{curPlaySong.name}}</h4>
         <p>{{curPlaySong.singer}}</p>
         <div class="cdWrapper">
+                                                    <!--此处false是为了方便调试  -->
             <div class="cdInner" ref="cdInnerRef" v-show="false">
                 <img :src="curPlaySong.pic" alt="" :class="playingStyle" ref="cdImgRef">
             </div>
@@ -18,7 +19,8 @@
 
         </div>
         <div class="processWrapper">
-            <Process :currentTime="currentTime" @onchangeBar="changeBar" @onchangedBar="changedBar" @onEnd="onEnd"></Process>
+            <!-- <Process :currentTime="currentTime" @onchangeBar="changeBar" @onchangedBar="changedBar" @onEnd="onEnd"></Process> -->
+            <Process :currentTime="currentTime" @onchangeBar="changeBar" @onchangedBar="changedBar"></Process>
         </div>
         <div class="playBtn">
             <div class="icon i-left">
@@ -40,7 +42,27 @@
             </div>
         </div>
     </div>
+    <div class="mini-player" :style="playStyleMini" v-if="!playScreen" @click.stop="setPlayScreen">
+        <div class="mini-player-inner">
+            <div class="cdInner" ref="cdInnerRef">
+                <img :src="curPlaySong.pic" alt="" :class="playingStyle" ref="cdImgRef">
+            </div>
+            <div class="info">
+                <span class="name">{{curPlaySong.name}}</span>
+                <span class="singer">{{curPlaySong.singer}}</span>
+            </div>
+            <div class="btns">
+                <div class="btn"  @click.stop="togglePlay" :class="playing ?'icon-pause':'icon-play'"></div>
+                <div class="btn icon-playlist" @click.stop="showPlayerList=true"></div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="miniPlayerWrapper" >
+        <miniPlayer :playStyleMini="playStyleMini"  v-show="!playScreen"></miniPlayer>
+    </div> -->
+    <playderList v-if="showPlayerList==true" @closePlayerList="closePlayerList" @togglePlayMode="togglePlayMode" @toggleFavoriteStatus="toggleFavoriteStatus"></playderList>
     <audio ref="audioPlayRef" @canplay="songReady" @timeupdate="updateTime"></audio>
+
 </div>
 </template>
 <script>
@@ -53,23 +75,29 @@ import Process from  './process.vue';
 import useCd from './useCd';
 import useLyric from './useLyric';
 import scroll  from '../base/scroll/scroll.vue';
+import playderList from './player-list.vue';
+import {isNullObj} from '@/assets/util/index';
 export default {
     name: 'player',
     components: {
         Process,
-        scroll
+        scroll,
+        playderList
     },
     setup() {
 
         //variable
         const playStyle = ref('')
+        const playStyleMini = ref('')
         const audioPlayRef = ref(null)
         const currentTime = ref(0)
         const songReady = ref(false)
         const isChangeBar = ref(false)
         const lyricIndex = ref(0)
         const lyricRef = ref(null)
-
+        const showPlayerList = ref(false)
+        // const miniWrapperRef = ref(null)
+        // const miniImgRef = ref(null)
 
         //state
         const store = useStore()
@@ -78,11 +106,12 @@ export default {
         const playing = computed(()=>store.state.playing)
         const index = computed(()=> store.state.index)
         const sequenceList = computed(()=>store.state.sequenceList)
+        const playingList = computed(()=>store.state.playingList)
         const playMode = computed(()=>store.state.playMode)
         const favoriteList = computed(()=>store.state.favoriteList)
 
         //hook 
-        const {playingStyle,cdInnerRef,cdImgRef} = useCd(playing)
+        const {playingStyle,cdInnerRef,cdImgRef} = useCd()
         const {lyricsObjArr,getIndexByCurTime} = useLyric()
 
         //computed
@@ -98,12 +127,18 @@ export default {
             return `transform:translateY(${-lyricIndex.value*34}px)`
         })
 
+        const isEnd = computed(()=>{
+            return parseInt(currentTime.value) == curPlaySong.value.duration
+        })
+
         //watch
         watch(playScreen,(newVal)=>{
             playStyle.value = newVal?`z-index:9999`:`z-index:-1`
+            playStyleMini.value = !newVal?`z-index:9999`:`z-index:-1`
         })
 
         watch(curPlaySong,(newVal)=>{
+            if(isNullObj(newVal)) return //清空歌曲列表时处理
             currentTime.value = 0
             songReady.value = false
             const audioPlay = audioPlayRef.value
@@ -131,6 +166,11 @@ export default {
             }
         })
 
+        watch(isEnd,(newVal)=>{
+            if(newVal) {
+                onEnd(newVal)
+            }
+        })
 
         //function
         function setMiniPlay() {
@@ -143,7 +183,7 @@ export default {
 
         function nextSongs() {
             let toggleIndex = index.value + 1
-            if(toggleIndex > sequenceList.value.length - 1){
+            if(toggleIndex > playingList.value.length - 1){
                 toggleIndex = 0
             }
             store.commit("setIndex",toggleIndex)
@@ -151,13 +191,28 @@ export default {
         function prevSongs() {
             let toggleIndex = index.value - 1
             if(toggleIndex < 0){
-                toggleIndex = sequenceList.value.length - 1
+                toggleIndex = playingList.value.length - 1
             }
             store.commit("setIndex",toggleIndex)
         }
         function togglePlayMode() {
             // console.log(playMode)
             store.dispatch('setPlayModeBySequence',playMode.value)   
+        }
+        function toggleFavoriteStatus(item) {
+            // const favoriteList_ = favoriteList.value.concat()
+            const favoriteList_ = getItem(storageName._FAVORITE_)&&getItem(storageName._FAVORITE_).length?getItem(storageName._FAVORITE_):[]
+            //判断当前歌曲是否在数组里面
+            const sameIndex = favoriteList_.findIndex(song=>song.mid==item.mid)
+            if(sameIndex !== -1) {
+                favoriteList_.splice(sameIndex,1)
+                setItem(storageName._FAVORITE_,favoriteList_)
+                store.commit("setFavoriteList",favoriteList_)
+            }else{
+                favoriteList_.push(item)
+                setItem(storageName._FAVORITE_,favoriteList_)
+                store.commit("setFavoriteList",favoriteList_)
+            }
         }
         function addFavoriteList() {
             // const favoriteList_ = favoriteList.value.concat()
@@ -222,16 +277,19 @@ export default {
             audioPlay.currentTime = 0
             audioPlay.play()
         }
-        // function isHasInFavoriteList() {
-        //     const result = favoriteList.value.findIndex(song=>song.mid==curPlaySong.value.value.mid)
-        //     return result !== -1
-        // }
+        function setPlayScreen() {
+            store.commit("setPlayScreen",true)
+        }
+        function closePlayerList() {
+            showPlayerList.value = false
+        }
 
         return {
             curPlaySong,
             playScreen,
             playing,
             playStyle,
+            playStyleMini,
             setMiniPlay,
             audioPlayRef,
             currentTime,
@@ -250,12 +308,17 @@ export default {
             changedBar,
             onEnd,
             playingStyle,
-            cdInnerRef,
-            cdImgRef,
             lyricsObjArr,
             lyricIndex,
             lyricRef,
-            lyricStyle
+            lyricStyle,
+            setPlayScreen,
+            cdInnerRef,
+            cdImgRef,
+            showPlayerList,
+            closePlayerList,
+            toggleFavoriteStatus,
+            playingList
         }
     }
 }
@@ -263,8 +326,12 @@ export default {
 </script>
 <style lang="scss">
 @import url('@/assets/scss/icon.scss');
+.playing {
+    animation: rotate 20s linear infinite;
+}
 .player {
     position: relative;
+    
     .normal-player {
         position: fixed;
         top: 0;
@@ -363,6 +430,58 @@ export default {
             left: 0;
         }
     }
-
+    .mini-player {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding-left: 20px;
+        padding-right: 12px;
+        box-sizing: border-box;
+        background-color: $color-highlight-background;
+        .mini-player-inner {
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            .cdInner {
+                img {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                }
+            }
+    
+            .info {
+                display: flex;
+                flex-direction: column;
+                width: 280px;
+                margin-left: 8px;
+                .name {
+                    display: block;
+                    color: $color-text;
+                    font-size: $font-size-medium;
+                }
+                .singer {
+                    display: block;
+                    color: $color-text-l;
+                    font-size: $font-size-small;
+                    margin-top: 12px;
+                }
+            }
+            .btns {
+                display: flex;
+                .btn {
+                    font-size: 32px;
+                    color: $color-theme-d;
+                    margin-right: 12px;
+                    &:last-child {
+                        margin-right: 0px;
+                    }
+                }
+            }
+    
+        }
+    }
 }
 </style>

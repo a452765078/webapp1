@@ -47,3 +47,10 @@ export function formatLyricTime (time) { // 格式化歌词的时间 转换成 s
     }
     return Number(sec + '.' + ms)
   }
+
+export function isNullObj(obj) {
+    if(Object.keys(obj).length == 0) {
+        return true
+    }
+    return false
+}

@@ -1,10 +1,15 @@
 <template>
     <div class="nav">
-        <ul>
+        <!-- <ul>
             <li v-for="(nav,index) in navList" :key="nav.id" @click="routerLink(index,nav.path)" :class="{'active-item':curIndex==index}">
                     {{nav.name}}
             </li>
-        </ul>
+        </ul> -->
+        <div class="navList">
+            <router-link  class="navItem" v-for="(nav,index) in navList" :key="nav.id"  :class="{'active-item':curIndex==index}" :to="nav.path">
+                <span>{{nav.name}}</span>
+            </router-link>
+        </div>
     </div>
 </template>
 <script>
@@ -34,8 +39,19 @@ export default {
                     name: '搜索',
                     path:'/search'
                 },
-            ]
+            ],
         }
+    },
+    computed: {
+        path() {
+            return this.$route.path
+        }
+    },
+    mounted() {
+        let _path = this.$route.path
+        let index = this.navList.findIndex(item=>{
+            return item.path == this.path
+        })
     },
     methods: {
         routerLink(index,path) {
@@ -48,10 +64,10 @@ export default {
 </script>
 <style lang="scss">
 .nav {
-    ul {
+    .navList {
         display: flex;
         justify-content: space-around;
-        li {
+        .navItem {
             width: 100%;
             height: 40px;
             line-height: 40px;
@@ -60,7 +76,7 @@ export default {
             font-size: $font-size-medium;
             position: relative;
 
-            &.active-item {
+            &.router-link-active {
                 color: $color-theme;
                 &::after {
                     position: absolute;

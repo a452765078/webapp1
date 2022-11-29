@@ -1,7 +1,8 @@
 import {watch,computed,ref} from 'vue'
 import { useStore } from 'vuex'
 import service from '@/service/getData'
-import {formatLyricTime} from '@/assets/util/index'
+import {formatLyricTime ,isNullObj} from '@/assets/util/index';
+
 
 export default function() {
     //var
@@ -12,6 +13,7 @@ export default function() {
     const curPlaySong = computed(()=>store.getters.getCurPlaySong)
     //watch
     watch(curPlaySong,async (newVal)=>{
+        if(isNullObj(newVal)) return //清空歌曲列表时处理
          const res = await service.getSongsLyric(newVal)
          lyric.value = res.lyric
          getLyricArr(lyric.value)

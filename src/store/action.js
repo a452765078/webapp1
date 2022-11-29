@@ -42,5 +42,15 @@ export default {
         const list = songs.concat()
         getRandomList(list,max)
         commit('setPlayingList',list)
+    },
+    delSong({state,commit},songs){
+        const playingList = state.playingList.concat()
+        const index = playingList.findIndex(item=>item.mid==songs.mid)
+        playingList.splice(index,1)
+        commit('setPlayingList',playingList)
+    },
+    clearPlayList({commit}) {
+        commit('setPlayingList',[])
+        commit('setPlaying',false)
     }
 }
