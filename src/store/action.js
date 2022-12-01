@@ -52,5 +52,16 @@ export default {
     clearPlayList({commit}) {
         commit('setPlayingList',[])
         commit('setPlaying',false)
+    },
+    selectSongBySong({commit,state},songs) {
+        const playingList = state.playingList.concat()
+        playingList.push(songs)
+        const index = playingList.findIndex(item=>item.mid==songs.mid)
+        commit('setPlaying',true)
+        commit('setPlayMode',constVar.SEQUENCE)
+        commit('setPlayScreen',true)
+        commit('setSequenceList',playingList)
+        commit('setPlayingList',playingList)
+        commit('setIndex',index)
     }
 }

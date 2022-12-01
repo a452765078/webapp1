@@ -28,5 +28,12 @@ export default {
     getSongsLyric(params){
         const {mid} = params
         return getData(`/api/getLyric?mid=${mid}`)
+    },
+    getSongsSearch(params){
+        const {query,page,showSinger} = params
+        return getData(`/api/search?query=${query}&page=${page}&showSinger=${showSinger}`)
+    },
+    getHotKeys(){
+        return getData(`/api/getHotKeys`)
     }
 }

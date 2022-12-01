@@ -1,4 +1,5 @@
 <template>
+<div class="singerDetail">
     <div class="songs"  :style="imgZindex">
         <div class="imgWrapper" ref="imgRef">
             <div class="back" @click="back">后退</div>
@@ -19,6 +20,8 @@
             </div>
         </div>
     </scroll>
+</div>
+
 
 
 </template>
@@ -140,90 +143,100 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.songs {
-    position: relative;
-    .imgWrapper {
-        width: 100%;
-        height: 0;
-        padding-top: 70%;
-        position: relative;
-        .img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-        }
-        h4 {
-            width: 100%;
-            position: absolute;
-            top: 12px;
-            left: 0;
-            text-align: center;
-            color: $color-text;
-            font-size: $font-size-large;
-            z-index: 99;
-        }
-        .button {
-            position: absolute;
-            bottom: 18px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 30px;
-            line-height: 30px;
-            border-radius: 20px;
-            border: 1px solid $color-theme;
-            color: $color-theme;
-            text-align: center;
-            font-size: $font-size-medium;
-            z-index: 99;
-        }
-        .back {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            color: $color-theme;
-            font-size: $font-size-large-x;
-            z-index: 999999;
-        }
-        .mask {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: $color-background-d;
-        }
-    }
-}
-.songsContent {
+.singerDetail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    height: 100%;
+    width: 100%;
     background-color: $color-background;
-    .songsList {
-        width: 100%;
-        z-index: 99;
-        padding-bottom: 295px;
-        .item {
-            height: 60px;
-            padding-left: 30px;
-            padding-top: 0px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            h5 {
-                color: $color-text;
-                font-size: $font-size-medium;
+    .songs {
+        position: relative;
+        .imgWrapper {
+            width: 100%;
+            height: 0;
+            padding-top: 70%;
+            position: relative;
+            .img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-size: cover;
             }
-            p {
-                margin-top: 8px;
-                color: $color-text-l;
+            h4 {
+                width: 100%;
+                position: absolute;
+                top: 12px;
+                left: 0;
+                text-align: center;
+                color: $color-text;
+                font-size: $font-size-large;
+                z-index: 99;
+            }
+            .button {
+                position: absolute;
+                bottom: 18px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 120px;
+                height: 30px;
+                line-height: 30px;
+                border-radius: 20px;
+                border: 1px solid $color-theme;
+                color: $color-theme;
+                text-align: center;
                 font-size: $font-size-medium;
+                z-index: 99;
+            }
+            .back {
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                color: $color-theme;
+                font-size: $font-size-large-x;
+                z-index: 999999;
+            }
+            .mask {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: $color-background-d;
+            }
+        }
+    }
+    .songsContent {
+        background-color: $color-background;
+        .songsList {
+            width: 100%;
+            z-index: 99;
+            padding-bottom: 295px;
+            .item {
+                height: 60px;
+                padding-left: 30px;
+                padding-top: 0px;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                h5 {
+                    color: $color-text;
+                    font-size: $font-size-medium;
+                }
+                p {
+                    margin-top: 8px;
+                    color: $color-text-l;
+                    font-size: $font-size-medium;
+                }
             }
         }
     }
 }
+
 
 
 </style>

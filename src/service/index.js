@@ -9,7 +9,7 @@ export default function(url,params) {
         if(data.code == 0) {
             return Promise.resolve(data.result)
         }else {
-            return Promise.reject("错误的状态码",code)
+            return Promise.reject("错误的状态码")
         }
 
     }).catch(err=>{

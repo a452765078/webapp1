@@ -32,7 +32,17 @@ const routes = [
   {
     path: '/search',
     name: 'search',
-    component: () => import('@/views/Search.vue')
+    component: () => import('@/views/Search.vue'),
+    children: [
+      {
+        path: ':id',
+        component: () => import('@/components/songs/songs.vue')
+      },
+      {
+        path: 'player',
+        component: () => import('@/components/player/player.vue')
+      }
+    ]
   },
 ]
 

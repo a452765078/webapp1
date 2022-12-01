@@ -77,6 +77,7 @@ import useLyric from './useLyric';
 import scroll  from '../base/scroll/scroll.vue';
 import playderList from './player-list.vue';
 import {isNullObj} from '@/assets/util/index';
+import service from '@/service/getData'
 export default {
     name: 'player',
     components: {
@@ -137,12 +138,17 @@ export default {
             playStyleMini.value = !newVal?`z-index:9999`:`z-index:-1`
         })
 
-        watch(curPlaySong,(newVal)=>{
+        watch(curPlaySong,async (newVal)=>{
             if(isNullObj(newVal)) return //清空歌曲列表时处理
             currentTime.value = 0
             songReady.value = false
             const audioPlay = audioPlayRef.value
-            audioPlay.src = newVal.url
+            console.log(newVal)
+            let newVal_ = Object.assign({},newVal)  //直接newVal会提示不能更改state
+            if(!newVal_.url)  {  //从搜索页面过来时没有url,请求url。
+                await service.getSongsUrl([newVal_])
+            }
+            audioPlay.src = newVal_.url
             audioPlay.play()
             store.commit('setPlaying',true)
             // debugger
