@@ -6,41 +6,41 @@ const routes = [
     path: '/',
     name: 'root',
     redirect:'/recommend',
-    component: () => import('@/views/Recommend.vue')
+    component: () => import('@/views/Recommend.vue'/*webpackChunkName: "Recommend"*/)
   },
   {
     path: '/recommend',
     name: 'recommend',
-    component: () => import('@/views/Recommend.vue')
+    component: () => import('@/views/Recommend.vue'/*webpackChunkName: "Recommend"*/)
   },
   {
     path: '/singer',
     name: 'singer',
-    component: () => import('@/views/Singer.vue'),
+    component: () => import('@/views/Singer.vue'/*webpackChunkName: "singer"*/),
     children: [
       {
         path:':id',
-        component: () => import('@/views/SingerDetail.vue')
+        component: () => import('@/views/SingerDetail.vue'/*webpackChunkName: "singer"*/)
       }
     ]
   },
   {
     path: '/rank',
     name: 'rank',
-    component: () => import('@/views/Rank.vue')
+    component: () => import('@/views/Rank.vue'/*webpackChunkName: "rank"*/)
   },
   {
     path: '/search',
     name: 'search',
-    component: () => import('@/views/Search.vue'),
+    component: () => import('@/views/Search.vue'/*webpackChunkName: "search"*/),
     children: [
       {
         path: ':id',
-        component: () => import('@/components/songs/songs.vue')
+        component: () => import('@/components/songs/songs.vue'/*webpackChunkName: "search"*/)
       },
       {
         path: 'player',
-        component: () => import('@/components/player/player.vue')
+        component: () => import('@/components/player/player.vue'/*webpackChunkName: "player"*/)
       }
     ]
   },

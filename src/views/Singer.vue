@@ -38,7 +38,7 @@
 import service from '@/service/getData';
 import scroll from '@/components/base/scroll/scroll.vue';
 import singerFunc from '@/components/singer/index';
-import {ref,getCurrentInstance,onMounted} from 'vue';
+import {ref,getCurrentInstance,onMounted,onActivated,onDeactivated} from 'vue';
 import {setItem} from '@/store/storage';
 import storageName from '@/assets/constVar/storageName'
 export default {
@@ -69,6 +69,15 @@ export default {
         }
     },
     setup(props,ctx) {
+        console.log("singer")
+
+        onDeactivated(()=>{
+            console.log("singer onDeactivated")
+        })
+        onActivated(()=>{
+            console.log("singer onActivated")
+        })
+
         const singers = ref([])
         const scrollRef = ref(null)
 

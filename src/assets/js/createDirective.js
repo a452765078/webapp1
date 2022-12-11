@@ -4,7 +4,7 @@ export default function(comp) {
     return {
         mounted(el,binding) {
             const app = createApp(comp).mount(document.createElement("div"))
-            // console.log(comp)
+            console.log("binding",binding)
             const name = comp.name
             el[name] = {}
             el[name].instance = app
@@ -13,6 +13,7 @@ export default function(comp) {
             }
         },
         updated(el,binding) {
+            console.log(binding)
             const name = comp.name
             if(binding.value != binding.oldValue) {
                 const positions = getComputedStyle(el).position

@@ -1,7 +1,14 @@
 <template>
   <header-vue></header-vue>
   <nav-vue></nav-vue>
-  <router-view/>
+  <!-- <router-view/> -->
+  <!--  -->
+  <router-view v-slot="{Component}">
+    <keep-alive>
+      <component :is="Component"></component>
+    </keep-alive>
+  </router-view>
+  <!--  -->
   <player></player>
 </template>
 <script>
