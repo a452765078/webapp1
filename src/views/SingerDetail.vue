@@ -1,17 +1,15 @@
 <template>
-    <songs></songs>
+    <songs-list></songs-list>
 </template>
 <script>
-import songs from '@/components/songs/songs.vue';
+import songsList from '@/components/songs/songs-list.vue';
 export default {
-    name: 'singerDetail',
     components: {
-        songs
-    },
-    methods: {
-
-    },
+        songsList
+    }
 }
+// import createDetailComponent from '@/assets/js/create-detail-component';
+// export default createDetailComponent
 </script>
 <style lang="scss">
 

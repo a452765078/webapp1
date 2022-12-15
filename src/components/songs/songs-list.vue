@@ -10,44 +10,44 @@
             </div>
         </div>
         <!-- Q:v-loading:[test] test获取不到是怎么回事？ -->
-        <scroll :probeType="3" @scrollY="scrollY" v-loading="loading" v-no-result="noResult" :style="scrollStyle">
-            <div class="songsContent">
-                <div class="songsList">
-                    <div class="item" v-for="(songs, index) in singerDetail" @click="selectItem(songs, index)">
-                        <h5>{{ songs.name }}</h5>
-                        <p>{{ songs.album }}</p>
+        <div class="songsWrapper" :style="scrollStyle">
+            <scroll :probeType="3" @scrollY="scrollY" v-loading="loading" v-no-result="noResult">
+                <div class="songsContent">
+                    <div class="songsList">
+                        <div class="item" v-for="(song, index) in songs" @click="selectItem(songs, index)">
+                            <h5>{{ song.name }}</h5>
+                            <p>{{ song.album }}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </scroll>
+            </scroll>
+        </div>
     </div>
-
-
-
 </template>
 <script>
 import { onMounted, ref, computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { getItem } from '@/store/storage';
 import scroll from '../base/scroll/scroll.vue';
-import service from '@/service/getData';
 import { mapActions } from 'vuex';
+import createDetailComponent from '@/assets/js/create-detail-component';
 export default {
     name: 'songs',
     components: {
         scroll
+    },
+    props: {
+
     },
     methods: {
         back() {
             this.$router.back()
         },
         ...mapActions(['selectSong', 'selectRandomPlay']),
-        selectItem(song, index) {
-            let obj = { songs: this.singerDetail, index }
+        selectItem(songs, index) {
+            let obj = { songs: songs, index }
             this.selectSong(obj)
         },
         selectRandomList() {
-            let obj = { songs: this.singerDetail }
+            let obj = { songs: this.songs }
             this.selectRandomPlay(obj)
         }
     },
@@ -61,15 +61,15 @@ export default {
     },
 
     setup(props, instance) {
-        const route = useRoute()
-        const singer = ref({})
-        const singerDetail = ref({})
+        //hooks
+        const { singer, songs, loading } = createDetailComponent()
+
+        //const
         const imgHeight = ref(0)
         const imgRef = ref(null)
         const posY = ref(0)
         const maxTranlateDistance = ref(0)
         const MIN_IMG_HEIGHT = 40
-        let loading = ref(true)
         const imgZindex = computed(() => {
             if (posY.value > 0 && posY.value < maxTranlateDistance.value) {
                 return `z-index:0`
@@ -92,23 +92,13 @@ export default {
         const filterStyle = computed(() => {
             let _posY = posY.value
             let blur = Math.min(maxTranlateDistance.value / imgHeight.value * 10, _posY / imgHeight.value * 10)
-            // console.log(blur)
             return {
                 backdropFilter: `blur(${blur}px)`
             }
         })
         const noResult = computed(() => {
-            return singerDetail.value.length === 2
+            return songs.value.length === 2
         })
-        // const buttonStyle = computed(()=>{
-        //     if(posY.value>0 && posY.value < maxTranlateDistance.value) {
-        //         return `display:none`
-        //     }else if(posY.value >= maxTranlateDistance.value){
-        //         return `display:none`
-        //     }else{
-        //         return `display:block`
-        //     }
-        // })
         const scrollStyle = computed(() => {
             return {
                 position: 'absolute',
@@ -118,15 +108,8 @@ export default {
         })
 
         onMounted(async () => {
-            singer.value = getItem("singer")
-            const res = await service.getSingerDetail(singer.value)
-            const res1 = await service.getSongsUrl(res.songs)  //songs是引用类型，不需要返回
-            // console.log(res.songs)
-            singerDetail.value = res.songs
-            loading.value = false
             imgHeight.value = imgRef.value.clientHeight
             maxTranlateDistance.value = imgHeight.value - MIN_IMG_HEIGHT
-            // console.log(maxTranlateDistance)
         })
         function scrollY(_posY) {
             posY.value = -_posY
@@ -135,18 +118,18 @@ export default {
 
 
         return {
-            singer,
-            singerDetail,
             scrollY,
             imgRef,
             imgHeight,
             imgZindex,
             imgStyle,
             filterStyle,
-            loading,
             noResult,
             // buttonStyle
-            scrollStyle
+            scrollStyle,
+            loading,
+            singer,
+            songs
         }
     }
 }
@@ -226,32 +209,39 @@ export default {
         }
     }
 
-    .songsContent {
-        background-color: $color-background;
+    .songsWrapper {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
 
-        .songsList {
-            width: 100%;
-            z-index: 99;
-            padding-bottom: 295px;
 
-            .item {
-                height: 60px;
-                padding-left: 30px;
-                padding-top: 0px;
-                box-sizing: border-box;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
+        .songsContent {
+            background-color: $color-background;
 
-                h5 {
-                    color: $color-text;
-                    font-size: $font-size-medium;
-                }
+            .songsList {
+                width: 100%;
+                z-index: 99;
+                padding-bottom: 295px;
 
-                p {
-                    margin-top: 8px;
-                    color: $color-text-l;
-                    font-size: $font-size-medium;
+                .item {
+                    height: 60px;
+                    padding-left: 30px;
+                    padding-top: 0px;
+                    box-sizing: border-box;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+
+                    h5 {
+                        color: $color-text;
+                        font-size: $font-size-medium;
+                    }
+
+                    p {
+                        margin-top: 8px;
+                        color: $color-text-l;
+                        font-size: $font-size-medium;
+                    }
                 }
             }
         }
