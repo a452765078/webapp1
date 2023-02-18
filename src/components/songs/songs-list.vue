@@ -61,8 +61,7 @@ export default {
     },
 
     setup(props, instance) {
-        //hooks
-        const { singer, songs, loading } = createDetailComponent()
+
 
         //const
         const imgHeight = ref(0)
@@ -70,6 +69,14 @@ export default {
         const posY = ref(0)
         const maxTranlateDistance = ref(0)
         const MIN_IMG_HEIGHT = 40
+
+        //hooks
+        const { singer, songs, loading } = createDetailComponent()
+        onMounted(async () => {
+            imgHeight.value = imgRef.value.clientHeight
+            maxTranlateDistance.value = imgHeight.value - MIN_IMG_HEIGHT
+        })
+        //computed
         const imgZindex = computed(() => {
             if (posY.value > 0 && posY.value < maxTranlateDistance.value) {
                 return `z-index:0`
@@ -106,11 +113,9 @@ export default {
                 left: '0px'
             }
         })
+        //
 
-        onMounted(async () => {
-            imgHeight.value = imgRef.value.clientHeight
-            maxTranlateDistance.value = imgHeight.value - MIN_IMG_HEIGHT
-        })
+        //function
         function scrollY(_posY) {
             posY.value = -_posY
         }

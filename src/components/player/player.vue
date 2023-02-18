@@ -8,23 +8,36 @@
             </div>
 
             <div class="cdWrapper" ref="cdWrapperRef">
-                <!--此处false是为了方便调试  -->
-                <div class="cdInner" ref="cdInnerRef" v-show="false">
-                    <img :src="curPlaySong.pic" alt="" :class="playingStyle" ref="cdImgRef">
-                </div>
-                <scroll :probeType="3">
-                    <div class="lyricWrapper" ref="lyricRef" :style="lyricStyle">
-                        <ul>
-                            <li v-for="(lyric, index) in lyricsObjArr" :key="lyric.uid"
-                                :class="{ 'curLyric': index == lyricIndex }">{{ lyric.lyric }}</li>
-                        </ul>
+                <div class="cdMiddle" @touchstart="ontouchStart" @touchmove="ontouchMove" @touchend="ontouchEnd"
+                    ref="cdMiddleRef">
+                    <div class="inlineBlock" :style="middleLstyle">
+                        <div class="cdInner" ref="cdInnerRef" v-show="true">
+                            <img :src="curPlaySong.pic" alt="" :class="playingStyle" ref="cdImgRef">
+                        </div>
                     </div>
-                </scroll>
+                    <div class="inlineBlock" :style="middleRstyle">
+                        <div class="cdInner" v-show="true">
+                            <img :src="curPlaySong.pic" alt="">
+                        </div>
+                    </div>
+                    <!-- <scroll :probeType="3" class="inlineBlock" >
+                        <div class="lyricWrapper" ref="lyricRef">
+                            <ul>
+                                <li v-for="(lyric, index) in lyricsObjArr" :key="lyric.uid"
+                                    :class="{ 'curLyric': index == lyricIndex }">{{ lyric.lyric }}</li>
+                            </ul>
+                        </div>
+                    </scroll> -->
+
+                </div>
+
+
 
             </div>
             <div class="processWrapper">
                 <!-- <Process :currentTime="currentTime" @onchangeBar="changeBar" @onchangedBar="changedBar" @onEnd="onEnd"></Process> -->
-                <Process :currentTime="currentTime" @onchangeBar="changeBar" @onchangedBar="changedBar"></Process>
+                <Process :currentTime.prevent="currentTime" @onchangeBar.prevent="changeBar"
+                    @onchangedBar.prevent="changedBar"></Process>
             </div>
             <div class="playBtn">
                 <div class="icon i-left">
@@ -46,7 +59,7 @@
                 </div>
             </div>
         </div>
-        <div class="mini-player" :style="playStyleMini" v-show="!playScreen" @click.stop="setPlayScreen">
+        <div class="mini-player" :style="playStyleMini" v-if="!playScreen" @click.stop="setPlayScreen">
             <div class="mini-player-inner">
                 <div class="cdInner" ref="cdInnerRef">
                     <img :src="curPlaySong.pic" alt="" :class="playingStyle" ref="cdImgRef">
@@ -61,24 +74,22 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="miniPlayerWrapper" >
-        <miniPlayer :playStyleMini="playStyleMini"  v-show="!playScreen"></miniPlayer>
-    </div> -->
         <playderList v-if="showPlayerList == true" @closePlayerList="closePlayerList" @togglePlayMode="togglePlayMode"
-            @toggleFavoriteStatus="toggleFavoriteStatus"></playderList>
+            @toggleFavoriteStatus="toggleFavoriteStatus">
+        </playderList>
         <audio ref="audioPlayRef" @canplay="songReady" @timeupdate="updateTime"></audio>
-
     </div>
 </template>
 <script>
-import { computed, watch, ref, onMounted } from 'vue';
+import { computed, watch, ref } from 'vue';
 import { useStore } from 'vuex';
-import constVar from '@/assets/constVar/index';
-import storageName from '@/assets/constVar/storageName';
-import { getItem, setItem } from '@/store/storage';
 import Process from './process.vue';
 import useCd from './useCd';
 import useLyric from './useLyric';
+import useFavorite from './useFavorite';
+import useMode from './useMode';
+import useSongope from './useSongope';
+import useCdmiddle from './useCdmiddle';
 import scroll from '../base/scroll/scroll.vue';
 import playderList from './player-list.vue';
 import { isNullObj } from '@/assets/util/index';
@@ -91,7 +102,8 @@ export default {
         playderList
     },
     setup() {
-
+        //store
+        const store = useStore()
         //variable
         const playStyle = ref('')
         const playStyleMini = ref('')
@@ -103,27 +115,19 @@ export default {
         const lyricRef = ref(null)
         const showPlayerList = ref(false)
         const cdWrapperRef = ref(null)
-
-        // const miniWrapperRef = ref(null)
-        // const miniImgRef = ref(null)
-
+        const cdMiddleRef = ref(null)
         //state
-        const store = useStore()
         const curPlaySong = computed(() => store.getters.getCurPlaySong)
         const playScreen = computed(() => store.state.playScreen)
         const playing = computed(() => store.state.playing)
-        const index = computed(() => store.state.index)
-        const sequenceList = computed(() => store.state.sequenceList)
         const playingList = computed(() => store.state.playingList)
-        const playMode = computed(() => store.state.playMode)
-        const favoriteList = computed(() => store.state.favoriteList)
-
         //hook 
         const { playingStyle, cdInnerRef, cdImgRef } = useCd()
         const { lyricsObjArr, getIndexByCurTime, lyricRefHeight, cdWrapperRefHeight } = useLyric(lyricRef, cdWrapperRef)  //获取歌词高度，根据当前时间获取索引，歌词列表
-
-
-
+        const { isHasInFavoriteList, toggleFavoriteStatus, addFavoriteList, removeFavoriteList } = useFavorite()  //点击收藏或者取消收藏，收藏样式调整
+        const { togglePlayMode } = useMode()  //模式切换
+        const { togglePlay, nextSongs, prevSongs } = useSongope(audioPlayRef, currentTime)  //歌曲前进后退中断、时间结束自动切换
+        const { ontouchStart, ontouchMove, ontouchEnd, middleLstyle, middleRstyle } = useCdmiddle()
         //computed
         //获取歌词条最大移动的距离
         const maxTranslateY = computed(() => {
@@ -132,11 +136,6 @@ export default {
         const playModeStyle = computed(() => {
             return `icon-${store.state.playMode}`
         })
-        const isHasInFavoriteList = computed(() => {
-            const result = favoriteList.value.findIndex(song => song.mid == curPlaySong.value.mid)
-            return result !== -1
-        })
-
         //根据lyricIndex 得到歌词列表中正在播放的歌词
         const lyricStyle = computed(() => {
             let translateYDis = lyricIndex.value * 34
@@ -145,11 +144,6 @@ export default {
             } else {
                 return `transform:translateY(${-lyricIndex.value * 34}px)`
             }
-
-        })
-
-        const isEnd = computed(() => {
-            return parseInt(currentTime.value) == curPlaySong.value.duration
         })
 
         //watch
@@ -157,13 +151,11 @@ export default {
             playStyle.value = newVal ? `z-index:9999;opacity:1` : `z-index:-1;opacity:0`
             playStyleMini.value = !newVal ? `z-index:9999` : `z-index:-1`
         })
-
         watch(curPlaySong, async (newVal) => {
             if (isNullObj(newVal)) return //清空歌曲列表时处理
             currentTime.value = 0
             songReady.value = false
             const audioPlay = audioPlayRef.value
-            console.log(newVal)
             let newVal_ = Object.assign({}, newVal)  //直接newVal会提示不能更改state
             if (!newVal_.url) {  //从搜索页面过来时没有url,请求url。
                 await service.getSongsUrl([newVal_])
@@ -171,110 +163,19 @@ export default {
             audioPlay.src = newVal_.url
             audioPlay.play()
             store.commit('setPlaying', true)
-            // debugger
-            // isHasInFavoriteList()
-        })
-
-        watch(playing, (newVal) => {
-            const audioPlay = audioPlayRef.value
-            if (playing.value) {
-                audioPlay.play()
-            } else {
-                audioPlay.pause()
-            }
-        })
-
-        watch(playMode, (newVal) => {
-            if (newVal == constVar.SEQUENCE) {
-                store.dispatch('setSequenceList', sequenceList.value)
-            } else if (newVal == constVar.RANDOM) {
-                store.dispatch('setRandomList', sequenceList.value)
-            }
-        })
-
-        //监听是否已结束播放，isEnd是计算属性
-        watch(isEnd, (newVal) => {
-            if (newVal) {
-                onEnd(newVal)
-            }
         })
 
 
         //function
-        function setMiniPlay() {
-            store.dispatch('setMiniPlay')
-        }
-
-        function togglePlay() {
-            store.commit('setPlaying', !playing.value)
-        }
-
-        function nextSongs() {
-            let toggleIndex = index.value + 1
-            if (toggleIndex > playingList.value.length - 1) {
-                toggleIndex = 0
-            }
-            store.commit("setIndex", toggleIndex)
-        }
-        function prevSongs() {
-            let toggleIndex = index.value - 1
-            if (toggleIndex < 0) {
-                toggleIndex = playingList.value.length - 1
-            }
-            store.commit("setIndex", toggleIndex)
-        }
-        function togglePlayMode() {
-            // console.log(playMode)
-            store.dispatch('setPlayModeBySequence', playMode.value)
-        }
-        function toggleFavoriteStatus(item) {
-            // const favoriteList_ = favoriteList.value.concat()
-            const favoriteList_ = getItem(storageName._FAVORITE_) && getItem(storageName._FAVORITE_).length ? getItem(storageName._FAVORITE_) : []
-            //判断当前歌曲是否在数组里面
-            const sameIndex = favoriteList_.findIndex(song => song.mid == item.mid)
-            if (sameIndex !== -1) {
-                favoriteList_.splice(sameIndex, 1)
-                setItem(storageName._FAVORITE_, favoriteList_)
-                store.commit("setFavoriteList", favoriteList_)
-            } else {
-                favoriteList_.push(item)
-                setItem(storageName._FAVORITE_, favoriteList_)
-                store.commit("setFavoriteList", favoriteList_)
-            }
-        }
-        function addFavoriteList() {
-            // const favoriteList_ = favoriteList.value.concat()
-            const favoriteList_ = getItem(storageName._FAVORITE_) && getItem(storageName._FAVORITE_).length ? getItem(storageName._FAVORITE_) : []
-            const curPlaySong_ = curPlaySong.value
-            //判断当前歌曲是否在数组里面
-            const sameIndex = favoriteList_.findIndex(song => song.mid == curPlaySong_.mid)
-            if (sameIndex !== -1) {
-                return
-            }
-
-            favoriteList_.push(curPlaySong_)
-            setItem(storageName._FAVORITE_, favoriteList_)
-            store.commit("setFavoriteList", favoriteList_)
-        }
-        function removeFavoriteList() {
-            // const favoriteList_ = favoriteList.value.concat()
-            const favoriteList_ = getItem(storageName._FAVORITE_) && getItem(storageName._FAVORITE_).length ? getItem(storageName._FAVORITE_) : []
-            const curPlaySong_ = curPlaySong.value
-            const sameIndex = favoriteList_.findIndex(song => song.mid == curPlaySong_.mid)
-            if (sameIndex !== -1) {
-                favoriteList_.splice(sameIndex, 1)
-            }
-            setItem(storageName._FAVORITE_, favoriteList_)
-            store.commit("setFavoriteList", favoriteList_)
-        }
+        const test = {}
         //播放器实时更新播放时间所触发的事件。
         // 更新数据中的当前时间，根据时间与歌词列表得到激活的歌词列表索引。通过索引移动歌词列表
         function updateTime(e) {
+            test.lastCurTime = e.target.currentTime
             if (!isChangeBar.value) {
                 let currentTime = e.target.currentTime
                 this.currentTime = currentTime
-                lyricIndex.value = getIndexByCurTime(currentTime, lyricsObjArr.value)
-                // console.log(lyricIndex.value)
+                // lyricIndex.value = getIndexByCurTime(currentTime, lyricsObjArr.value)
             }
         }
         //改变歌曲进度条，按键未放下。由子组件触发
@@ -293,25 +194,11 @@ export default {
                 audioPlay.pause()
             }
         }
-        //结束播放之后，根据播放模式选择下一首音乐或者继续播放当前歌曲
-        function onEnd(isEnd) {
-            if (!isEnd) {
-                return
-            }
-            if (playMode.value == constVar.LOOP) {
-                loopPlay()
-            } else {
-                nextSongs()
-            }
-
-        }
-        function loopPlay() {
-            const audioPlay = audioPlayRef.value
-            audioPlay.currentTime = 0
-            audioPlay.play()
-        }
         function setPlayScreen() {
             store.commit("setPlayScreen", true)
+        }
+        function setMiniPlay() {
+            store.dispatch('setMiniPlay')
         }
         function closePlayerList() {
             showPlayerList.value = false
@@ -334,12 +221,9 @@ export default {
             playModeStyle,
             addFavoriteList,
             removeFavoriteList,
-            favoriteList,
-            isHasInFavoriteList,
             updateTime,
             changeBar,
             changedBar,
-            onEnd,
             playingStyle,
             lyricsObjArr,
             lyricIndex,
@@ -354,7 +238,14 @@ export default {
             playingList,
             cdWrapperRef,
             cdWrapperRefHeight,
-            lyricRefHeight
+            lyricRefHeight,
+            isHasInFavoriteList,
+            ontouchStart,
+            ontouchMove,
+            ontouchEnd,
+            cdMiddleRef,
+            middleLstyle,
+            middleRstyle
         }
     }
 }
@@ -365,6 +256,11 @@ export default {
 
 .playing {
     animation: rotate 20s linear infinite;
+}
+
+.inlineBlock {
+    display: inline-block;
+    transition: all .3s;
 }
 
 .player {
@@ -417,10 +313,10 @@ export default {
         .cdWrapper {
             position: fixed;
             top: 80px;
-            left: 0;
+            bottom: 180px;
             width: 100%;
-            height: 70%;
             overflow: hidden;
+            white-space: nowrap;
 
             .cdInner {
                 width: 100%;

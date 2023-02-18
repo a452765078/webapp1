@@ -6,20 +6,20 @@
 <script>
 // import BScroll from '@better-scroll/core';
 // import ObserveDOM from '@better-scroll/observe-dom'
-import { ref ,defineExpose} from 'vue';
+import { ref, defineExpose } from 'vue';
 // BScroll.use(ObserveDOM)
 import scrollFunc from './index'
 export default {
     name: 'scrollVue',
     props: {
-        probeType:{
-            type:Number,
-            default(){return 1}
+        probeType: {
+            type: Number,
+            default() { return 1 }
         }
     },
-    setup(props,ctx) {
+    setup(props, ctx) {
         const scrollRef = ref(null)
-        const {scroll} = scrollFunc(scrollRef,props)  
+        const { scroll } = scrollFunc(scrollRef, props)
 
         return {
             scrollRef,

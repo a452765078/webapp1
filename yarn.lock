@@ -969,6 +969,13 @@
   dependencies:
     "@better-scroll/shared-utils" "^2.5.0"
 
+"@better-scroll/mouse-wheel@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.npmmirror.com/@better-scroll/mouse-wheel/-/mouse-wheel-2.5.0.tgz#60097be07b3f23eb326a24d6da135f6f02d4b9af"
+  integrity sha512-ZQLAinumoBlW+EO30bKWUcBhlhNh9fI9/8Q6KbIp4vkuUfAYzZPtaVjzFSTtbo5XTTqraH184jtUf3wY0zFNrA==
+  dependencies:
+    "@better-scroll/core" "^2.5.0"
+
 "@better-scroll/observe-dom@^2.5.0":
   version "2.5.0"
   resolved "https://registry.npmmirror.com/@better-scroll/observe-dom/-/observe-dom-2.5.0.tgz#886d20ffb4d1cde2d229fb8a7b4bc1a678e4288d"

@@ -19,7 +19,7 @@ const routes = [
     component: () => import('@/views/Singer.vue'/*webpackChunkName: "singer"*/),
     children: [
       {
-        path:':id',
+        path:'/singer/:id',
         component: () => import('@/views/SingerDetail.vue'/*webpackChunkName: "singer"*/)
       }
     ]
@@ -35,11 +35,11 @@ const routes = [
     component: () => import('@/views/Search.vue'/*webpackChunkName: "search"*/),
     children: [
       {
-        path: ':id',
+        path: '/search/:id',
         component: () => import('@/components/songs/songs.vue'/*webpackChunkName: "search"*/)
       },
       {
-        path: 'player',
+        path: '/search/player',
         component: () => import('@/components/player/player.vue'/*webpackChunkName: "player"*/)
       }
     ]

@@ -50,17 +50,12 @@ export default {
             this.curTime = parseInt(this.curPlaySong.duration * process)
         },
         currentTime(newVal) {
-            // console.log(formatToStr(parseInt(newVal)))
+            // console.log(newVal)
             let curPlaySong = this.curPlaySong
             this.process = newVal / curPlaySong.duration
             this.translateDis = this.$refs['processRef'].clientWidth * this.process
             this.$refs['curProcessRef'].style.width = `${this.translateDis}px`
-            // this.isEnd = ~~newVal == curPlaySong.duration?true:false
         },
-        // isEnd(newVal) {
-        //     console.log(newVal)
-        //     this.$emit("onEnd",newVal)
-        // }
     },
     methods: {
         ontouchstart(e) {
