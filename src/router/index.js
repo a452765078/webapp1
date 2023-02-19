@@ -16,7 +16,7 @@ const routes = [
   {
     path: '/singer',
     name: 'singer',
-    component: () => import('@/views/Singer.vue'/*webpackChunkName: "singer"*/),
+    component: () => import('@/views/singer/index.vue'/*webpackChunkName: "singer"*/),
     children: [
       {
         path:'/singer/:id',
